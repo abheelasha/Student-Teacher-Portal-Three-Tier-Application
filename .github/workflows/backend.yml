@@ -1,3 +1,4 @@
+#cat > .github/workflows/backend.yml <<'EOF'
 name: Backend Build & Push
 
 on:
@@ -9,11 +10,6 @@ jobs:
 
     permissions:
       contents: read
-
-    defaults:
-      run:
-        shell: bash
-        working-directory: backend
 
     steps:
       - name: Checkout Code
@@ -29,10 +25,14 @@ jobs:
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build and Push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
-          context: backend
-          path: backend/Dockerfile
+          context: ./backend
+          file: ./backend/Dockerfile
           push: true
           tags: 615299766984.dkr.ecr.us-east-1.amazonaws.com/dev/backend:${{ github.run_number }}
+#EOF
